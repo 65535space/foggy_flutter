@@ -13,6 +13,14 @@ if (localPropertiesFile.exists()) {
     }
 }
 
+def secretProperties = new Properties()
+def secretPropertiesFile = rootProject.file('secret.properties')
+if (secretPropertiesFile.exists()) {
+    secretPropertiesFile.withReader('UTF-8') { reader ->
+        secretProperties.load(reader)
+    }
+}
+
 def flutterVersionCode = localProperties.getProperty("flutter.versionCode")
 if (flutterVersionCode == null) {
     flutterVersionCode = "1"
@@ -38,10 +46,14 @@ android {
         applicationId = "com.example.foggy_flutter"
         // You can update the following values to match your application needs.
         // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
-        minSdk = flutter.minSdkVersion
+        minSdk = 21
         targetSdk = flutter.targetSdkVersion
         versionCode = flutterVersionCode.toInteger()
         versionName = flutterVersionName
+        // 環境変数を呼び出すコード
+        manifestPlaceholders = [
+            googleMapApiKey: secretProperties.getProperty('googleMap.apiKey'),
+        ]
     }
 
     buildTypes {
